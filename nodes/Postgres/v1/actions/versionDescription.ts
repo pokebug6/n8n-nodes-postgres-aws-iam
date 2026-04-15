@@ -1,0 +1,118 @@
+/* eslint-disable n8n-nodes-base/node-filename-against-convention */
+import { NodeConnectionTypes, type INodeTypeDescription } from 'n8n-workflow';
+
+import * as database from './database/Database.resource';
+
+// AWS 区域列表
+const awsRegions = [
+	{ name: 'US East (N. Virginia) Us-East-1', value: 'us-east-1' },
+	{ name: 'US East (Ohio) Us-East-2', value: 'us-east-2' },
+	{ name: 'US West (N. California) Us-West-1', value: 'us-west-1' },
+	{ name: 'US West (Oregon) Us-West-2', value: 'us-west-2' },
+	{ name: 'Africa (Cape Town) Af-South-1', value: 'af-south-1' },
+	{ name: 'Asia Pacific (Hong Kong) Ap-East-1', value: 'ap-east-1' },
+	{ name: 'Asia Pacific (Hyderabad) Ap-South-2', value: 'ap-south-2' },
+	{ name: 'Asia Pacific (Jakarta) Ap-Southeast-3', value: 'ap-southeast-3' },
+	{ name: 'Asia Pacific (Melbourne) Ap-Southeast-4', value: 'ap-southeast-4' },
+	{ name: 'Asia Pacific (Mumbai) Ap-South-1', value: 'ap-south-1' },
+	{ name: 'Asia Pacific (Osaka) Ap-Northeast-3', value: 'ap-northeast-3' },
+	{ name: 'Asia Pacific (Seoul) Ap-Northeast-2', value: 'ap-northeast-2' },
+	{ name: 'Asia Pacific (Singapore) Ap-Southeast-1', value: 'ap-southeast-1' },
+	{ name: 'Asia Pacific (Sydney) Ap-Southeast-2', value: 'ap-southeast-2' },
+	{ name: 'Asia Pacific (Tokyo) Ap-Northeast-1', value: 'ap-northeast-1' },
+	{ name: 'Canada (Central) Ca-Central-1', value: 'ca-central-1' },
+	{ name: 'Canada West (Calgary) Ca-West-1', value: 'ca-west-1' },
+	{ name: 'Europe (Frankfurt) Eu-Central-1', value: 'eu-central-1' },
+	{ name: 'Europe (Ireland) Eu-West-1', value: 'eu-west-1' },
+	{ name: 'Europe (London) Eu-West-2', value: 'eu-west-2' },
+	{ name: 'Europe (Milan) Eu-South-1', value: 'eu-south-1' },
+	{ name: 'Europe (Paris) Eu-West-3', value: 'eu-west-3' },
+	{ name: 'Europe (Spain) Eu-South-2', value: 'eu-south-2' },
+	{ name: 'Europe (Stockholm) Eu-North-1', value: 'eu-north-1' },
+	{ name: 'Europe (Zurich) Eu-Central-2', value: 'eu-central-2' },
+	{ name: 'Israel (Tel Aviv) Il-Central-1', value: 'il-central-1' },
+	{ name: 'Middle East (Bahrain) Me-South-1', value: 'me-south-1' },
+	{ name: 'Middle East (UAE) Me-Central-1', value: 'me-central-1' },
+	{ name: 'South America (São Paulo) Sa-East-1', value: 'sa-east-1' },
+	{ name: 'AWS GovCloud (US-East) Us-Gov-East-1', value: 'us-gov-east-1' },
+	{ name: 'AWS GovCloud (US-West) Us-Gov-West-1', value: 'us-gov-west-1' },
+	{ name: 'China (Beijing) Cn-North-1', value: 'cn-north-1' },
+	{ name: 'China (Ningxia) Cn-Northwest-1', value: 'cn-northwest-1' },
+];
+
+export const versionDescription: INodeTypeDescription = {
+	displayName: 'Postgres (AWS IAM)',
+	name: 'postgresAwsIam',
+	group: ['input'],
+	version: [1],
+	subtitle: '={{ $parameter["operation"] }}',
+	description: 'Get, add and update data in Postgres via AWS RDS IAM authentication',
+	defaults: {
+		name: 'Postgres (AWS IAM)',
+	},
+	inputs: [NodeConnectionTypes.Main],
+	outputs: [NodeConnectionTypes.Main],
+	usableAsTool: true,
+	// 不使用 credential，通过 IAM Role 认证
+	credentials: [],
+	properties: [
+		{
+			displayName: 'AWS Region',
+			name: 'awsRegion',
+			type: 'options',
+			noDataExpression: true,
+			options: awsRegions,
+			default: 'us-east-1',
+			required: true,
+			description: 'The AWS region where the RDS instance is located',
+		},
+		{
+			displayName: 'Endpoint',
+			name: 'endpoint',
+			type: 'string',
+			default: '',
+			required: true,
+			placeholder: 'e.g. mydb.xxxxxxxxxxxx.us-east-1.rds.amazonaws.com',
+			description: 'The RDS instance endpoint hostname',
+		},
+		{
+			displayName: 'Port',
+			name: 'port',
+			type: 'number',
+			default: 5432,
+			required: true,
+			description: 'The port number of the RDS instance',
+		},
+		{
+			displayName: 'User',
+			name: 'user',
+			type: 'string',
+			default: '',
+			required: true,
+			placeholder: 'e.g. iam_user',
+			description: 'The database user configured for IAM authentication',
+		},
+		{
+			displayName: 'Database',
+			name: 'database',
+			type: 'string',
+			default: 'postgres',
+			required: true,
+			description: 'The name of the database to connect to',
+		},
+		{
+			displayName: 'Resource',
+			name: 'resource',
+			type: 'hidden',
+			noDataExpression: true,
+			options: [
+				{
+					name: 'Database',
+					value: 'database',
+				},
+			],
+			default: 'database',
+		},
+		...database.description,
+	],
+};

@@ -1,0 +1,59 @@
+{
+	"name": "n8n-nodes-postgres-aws-iam",
+	"version": "0.1.0",
+	"description": "n8n community node for AWS RDS PostgreSQL with IAM authentication",
+	"license": "MIT",
+	"homepage": "https://github.com/pokebug6/n8n-nodes-postgres-aws-iam",
+	"keywords": [
+		"n8n-community-node-package",
+		"n8n",
+		"n8n-nodes"
+	],
+	"author": {
+		"name": "PokeBug",
+		"email": "yege0201@gmail.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/pokebug6/n8n-nodes-postgres-aws-iam"
+	},
+	"scripts": {
+		"build": "n8n-node build",
+		"build:watch": "tsc --watch",
+		"dev": "n8n-node dev",
+		"lint": "n8n-node lint",
+		"lint:fix": "n8n-node lint --fix",
+		"release": "n8n-node release",
+		"prepublishOnly": "n8n-node prerelease"
+	},
+	"files": [
+		"dist"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"strict": false,
+		"credentials": [],
+		"nodes": [
+			"dist/nodes/Postgres/PostgresAwsIam.node.js"
+		]
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "https://registry.npmjs.org/"
+	},
+	"dependencies": {
+		"@aws-sdk/rds-signer": "^3.1029.0",
+		"pg-promise": "^12.6.2"
+	},
+	"devDependencies": {
+		"@n8n/node-cli": "*",
+		"@types/lodash": "^4.17.24",
+		"eslint": "9.32.0",
+		"prettier": "3.6.2",
+		"release-it": "^19.0.4",
+		"typescript": "5.9.2"
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	}
+}

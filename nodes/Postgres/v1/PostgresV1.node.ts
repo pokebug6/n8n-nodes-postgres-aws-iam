@@ -1,0 +1,29 @@
+import type {
+	IExecuteFunctions,
+	INodeExecutionData,
+	INodeType,
+	INodeTypeBaseDescription,
+	INodeTypeDescription,
+} from 'n8n-workflow';
+
+import { router } from './actions/router';
+import { versionDescription } from './actions/versionDescription';
+import { listSearch, loadOptions, resourceMapping } from './methods';
+
+// eslint-disable-next-line @n8n/community-nodes/icon-validation
+export class PostgresV1 implements INodeType {
+	description: INodeTypeDescription;
+
+	constructor(baseDescription: INodeTypeBaseDescription) {
+		this.description = {
+			...baseDescription,
+			...versionDescription,
+		};
+	}
+
+	methods = { listSearch, loadOptions, resourceMapping };
+
+	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
+		return await router.call(this);
+	}
+}
