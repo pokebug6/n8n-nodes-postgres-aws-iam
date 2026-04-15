@@ -34,7 +34,7 @@
 		"strict": false,
 		"credentials": [],
 		"nodes": [
-			"dist/nodes/Postgres/PostgresAwsIam.node.js"
+			"dist/nodes/PostgresAwsIam/PostgresAwsIam.node.js"
 		]
 	},
 	"publishConfig": {
