@@ -690,17 +690,34 @@ export const runQueriesAndHandleErrors = async (
 
 
 /**
+ * 从 resourceLocator 参数中安全地提取值
+ * resourceLocator 的值可能是字符串，也可能是 { __rl: true, mode: '...', value: '...' } 对象
+ */
+function extractResourceLocatorValue(raw: unknown, fallback: string): string {
+	if (typeof raw === 'string') return raw || fallback;
+	if (raw && typeof raw === 'object' && 'value' in raw) {
+		const val = (raw as { value: unknown }).value;
+		return typeof val === 'string' && val ? val : fallback;
+	}
+	return fallback;
+}
+
+/**
  * Get AWS IAM connection parameters from node parameters
  */
 export function getConnectionParams(
 	this: IExecuteFunctions | ILoadOptionsFunctions,
 	itemIndex: number,
 ): AwsIamConnectionParams {
+	// database 是 resourceLocator 类型，需要安全提取值
+	const rawDatabase = this.getNodeParameter('database', itemIndex, { mode: 'list', value: 'postgres' });
+	const database = extractResourceLocatorValue(rawDatabase, 'postgres');
+
 	return {
 		region: this.getNodeParameter('awsRegion', itemIndex) as string,
 		host: this.getNodeParameter('endpoint', itemIndex) as string,
 		port: this.getNodeParameter('port', itemIndex) as number,
 		user: this.getNodeParameter('user', itemIndex) as string,
-		database: this.getNodeParameter('database', itemIndex) as string,
+		database,
 	};
 }

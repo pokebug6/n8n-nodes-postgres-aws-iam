@@ -1,11 +1,43 @@
 import type { ILoadOptionsFunctions, INodeListSearchResult } from 'n8n-workflow';
 
 import { configurePostgres } from '../../transport';
+import type { AwsIamConnectionParams } from '../helpers/interfaces';
 import { getConnectionParams } from '../helpers/utils';
+
+export async function databaseSearch(this: ILoadOptionsFunctions): Promise<INodeListSearchResult> {
+	// 连接到默认的 postgres 数据库来查询数据库列表
+	const connectionParams: AwsIamConnectionParams = {
+		region: this.getNodeParameter('awsRegion', 0) as string,
+		host: this.getNodeParameter('endpoint', 0) as string,
+		port: this.getNodeParameter('port', 0) as number,
+		user: this.getNodeParameter('user', 0) as string,
+		database: 'postgres',
+	};
+	const options = {
+		nodeVersion: this.getNode().typeVersion,
+		connectionTimeout: 30,
+	};
+
+	const { db } = await configurePostgres.call(this, connectionParams, options);
+
+	const response = await db.any(
+		"SELECT datname FROM pg_database WHERE datistemplate = false ORDER BY datname",
+	);
+
+	return {
+		results: response.map((row) => ({
+			name: row.datname as string,
+			value: row.datname as string,
+		})),
+	};
+}
 
 export async function schemaSearch(this: ILoadOptionsFunctions): Promise<INodeListSearchResult> {
 	const connectionParams = getConnectionParams.call(this, 0);
-	const options = { nodeVersion: this.getNode().typeVersion };
+	const options = {
+		nodeVersion: this.getNode().typeVersion,
+		connectionTimeout: 30,
+	};
 
 	const { db } = await configurePostgres.call(this, connectionParams, options);
 
@@ -20,7 +52,10 @@ export async function schemaSearch(this: ILoadOptionsFunctions): Promise<INodeLi
 }
 export async function tableSearch(this: ILoadOptionsFunctions): Promise<INodeListSearchResult> {
 	const connectionParams = getConnectionParams.call(this, 0);
-	const options = { nodeVersion: this.getNode().typeVersion };
+	const options = {
+		nodeVersion: this.getNode().typeVersion,
+		connectionTimeout: 30,
+	};
 
 	const { db } = await configurePostgres.call(this, connectionParams, options);
 

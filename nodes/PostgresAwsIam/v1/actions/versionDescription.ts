@@ -95,10 +95,25 @@ export const versionDescription: INodeTypeDescription = {
 		{
 			displayName: 'Database',
 			name: 'database',
-			type: 'string',
-			default: 'postgres',
+			type: 'resourceLocator',
+			default: { mode: 'list', value: 'postgres' },
 			required: true,
 			description: 'The name of the database to connect to',
+			modes: [
+				{
+					displayName: 'From List',
+					name: 'list',
+					type: 'list',
+					typeOptions: {
+						searchListMethod: 'databaseSearch',
+					},
+				},
+				{
+					displayName: 'By Name',
+					name: 'name',
+					type: 'string',
+				},
+			],
 		},
 		{
 			displayName: 'Resource',
