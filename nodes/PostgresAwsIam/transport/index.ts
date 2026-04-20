@@ -17,7 +17,7 @@ import type {
 } from '../v1/helpers/interfaces';
 
 /**
- * 使用 AWS IAM Role 生成 RDS 认证 token
+ * Generate an RDS authentication token using AWS IAM Role
  */
 async function generateRdsAuthToken(params: AwsIamConnectionParams): Promise<string> {
 	const signer = new Signer({
@@ -51,7 +51,7 @@ const getPostgresConfig = (
 		dbConfig.keepAliveInitialDelayMillis = options.delayClosingIdleConnection * 1000;
 	}
 
-	// AWS RDS IAM 认证要求使用 SSL
+	// AWS RDS IAM authentication requires SSL
 	dbConfig.ssl = {
 		rejectUnauthorized: false,
 	};
@@ -68,11 +68,11 @@ export async function configurePostgres(
 
 	const fallBackHandler = async (abortController: AbortController) => {
 		const pgp = pgPromise({
-			// 防止控制台输出重复连接警告
+			// Prevent duplicate connection warnings in console output
 			noWarnings: true,
 		});
 
-		// 始终将日期作为 ISO 字符串返回
+		// Always return dates as ISO strings
 		[pgp.pg.types.builtins.TIMESTAMP, pgp.pg.types.builtins.TIMESTAMPTZ].forEach((type) => {
 			pgp.pg.types.setTypeParser(type, (value: string) => {
 				const parsedDate = new Date(value);
@@ -94,7 +94,7 @@ export async function configurePostgres(
 			});
 		}
 
-		// 使用 IAM Role 生成认证 token
+		// Generate authentication token using IAM Role
 		const authToken = await generateRdsAuthToken(connectionParams);
 		const dbConfig = getPostgresConfig(connectionParams, authToken, options);
 
@@ -104,7 +104,7 @@ export async function configurePostgres(
 			try {
 				if (!db.$pool.ended) await db.$pool.end();
 			} catch {
-				// 忽略关闭连接池时的错误
+				// Ignore errors when closing the connection pool
 			}
 		});
 

@@ -5,7 +5,7 @@ import type { AwsIamConnectionParams } from '../helpers/interfaces';
 import { getConnectionParams } from '../helpers/utils';
 
 export async function databaseSearch(this: ILoadOptionsFunctions): Promise<INodeListSearchResult> {
-	// 连接到默认的 postgres 数据库来查询数据库列表
+	// Connect to the default 'postgres' database to list all available databases
 	const connectionParams: AwsIamConnectionParams = {
 		region: this.getNodeParameter('awsRegion', 0) as string,
 		host: this.getNodeParameter('endpoint', 0) as string,

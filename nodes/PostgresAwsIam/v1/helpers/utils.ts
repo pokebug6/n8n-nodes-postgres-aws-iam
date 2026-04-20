@@ -690,8 +690,8 @@ export const runQueriesAndHandleErrors = async (
 
 
 /**
- * 从 resourceLocator 参数中安全地提取值
- * resourceLocator 的值可能是字符串，也可能是 { __rl: true, mode: '...', value: '...' } 对象
+ * Safely extract the value from a resourceLocator parameter.
+ * The value may be a plain string or a { __rl: true, mode: '...', value: '...' } object.
  */
 function extractResourceLocatorValue(raw: unknown, fallback: string): string {
 	if (typeof raw === 'string') return raw || fallback;
@@ -709,7 +709,7 @@ export function getConnectionParams(
 	this: IExecuteFunctions | ILoadOptionsFunctions,
 	itemIndex: number,
 ): AwsIamConnectionParams {
-	// database 是 resourceLocator 类型，需要安全提取值
+	// database is a resourceLocator type, safely extract its value
 	const rawDatabase = this.getNodeParameter('database', itemIndex, { mode: 'list', value: 'postgres' });
 	const database = extractResourceLocatorValue(rawDatabase, 'postgres');
 

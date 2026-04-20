@@ -3,7 +3,7 @@ import { NodeConnectionTypes, type INodeTypeDescription } from 'n8n-workflow';
 
 import * as database from './database/Database.resource';
 
-// AWS 区域列表
+// AWS region list
 const awsRegions = [
 	{ name: 'US East (N. Virginia) Us-East-1', value: 'us-east-1' },
 	{ name: 'US East (Ohio) Us-East-2', value: 'us-east-2' },
@@ -53,7 +53,7 @@ export const versionDescription: INodeTypeDescription = {
 	inputs: [NodeConnectionTypes.Main],
 	outputs: [NodeConnectionTypes.Main],
 	usableAsTool: true,
-	// 不使用 credential，通过 IAM Role 认证
+	// No credentials needed, authentication is handled via IAM Role
 	credentials: [],
 	properties: [
 		{
