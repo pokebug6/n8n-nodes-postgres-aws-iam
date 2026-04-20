@@ -72,20 +72,18 @@ export async function configurePostgres(
 			noWarnings: true,
 		});
 
-		if (typeof options.nodeVersion === 'number' && options.nodeVersion >= 2.1) {
-			// 始终将日期作为 ISO 字符串返回
-			[pgp.pg.types.builtins.TIMESTAMP, pgp.pg.types.builtins.TIMESTAMPTZ].forEach((type) => {
-				pgp.pg.types.setTypeParser(type, (value: string) => {
-					const parsedDate = new Date(value);
+		// 始终将日期作为 ISO 字符串返回
+		[pgp.pg.types.builtins.TIMESTAMP, pgp.pg.types.builtins.TIMESTAMPTZ].forEach((type) => {
+			pgp.pg.types.setTypeParser(type, (value: string) => {
+				const parsedDate = new Date(value);
 
-					if (isNaN(parsedDate.getTime())) {
-						return value;
-					}
+				if (isNaN(parsedDate.getTime())) {
+					return value;
+				}
 
-					return parsedDate.toISOString();
-				});
+				return parsedDate.toISOString();
 			});
-		}
+		});
 
 		if (options.largeNumbersOutput === 'numbers') {
 			pgp.pg.types.setTypeParser(20, (value: string) => {

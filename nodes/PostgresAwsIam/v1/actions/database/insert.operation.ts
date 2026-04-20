@@ -20,7 +20,6 @@ import {
 	checkItemAgainstSchema,
 	configureTableSchemaUpdater,
 	getTableSchema,
-	prepareItem,
 	convertArraysToPostgresFormat,
 	replaceEmptyStringsByNulls,
 	hasJsonDataTypeInSchema,
@@ -51,7 +50,7 @@ const properties: INodeProperties[] = [
 			'Whether to map node input properties and the table data automatically or manually',
 		displayOptions: {
 			show: {
-				'@version': [2, 2.1],
+				'@version': [1],
 			},
 		},
 	},
@@ -65,7 +64,7 @@ const properties: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				dataMode: ['autoMapInputData'],
-				'@version': [2, 2.1],
+				'@version': [1],
 			},
 		},
 	},
@@ -81,7 +80,7 @@ const properties: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				dataMode: ['defineBelow'],
-				'@version': [2, 2.1],
+				'@version': [1],
 			},
 		},
 		default: {},
@@ -139,7 +138,7 @@ const properties: INodeProperties[] = [
 		},
 		displayOptions: {
 			show: {
-				'@version': [{ _cnd: { gte: 2.2 } }],
+				'@version': [1],
 			},
 		},
 	},
@@ -167,7 +166,6 @@ export async function execute(
 	pgp: PgpClient,
 ): Promise<INodeExecutionData[]> {
 	items = replaceEmptyStringsByNulls(items, nodeOptions.replaceEmptyStrings as boolean);
-	const nodeVersion = nodeOptions.nodeVersion as number;
 
 	let schema = this.getNodeParameter('schema', 0, undefined, {
 		extractValue: true,
@@ -203,10 +201,7 @@ export async function execute(
 			let query = `INSERT INTO $1:name.$2:name($3:name) VALUES($3:csv)${onConflict}`;
 			let values: QueryValues = [schema, table];
 
-			const dataMode =
-				nodeVersion < 2.2
-					? (this.getNodeParameter('dataMode', i) as string)
-					: (this.getNodeParameter('columns.mappingMode', i) as string);
+			const dataMode =this.getNodeParameter('columns.mappingMode', i);
 
 			let item: IDataObject = {};
 
@@ -215,36 +210,24 @@ export async function execute(
 			}
 
 			if (dataMode === 'defineBelow') {
-				const valuesToSend =
-					nodeVersion < 2.2
-						? ((this.getNodeParameter('valuesToSend', i, []) as IDataObject)
-								.values as IDataObject[])
-						: ((this.getNodeParameter('columns.values', i, []) as IDataObject)
-								.values as IDataObject[]);
-
-				item =
-					nodeVersion < 2.2
-						? prepareItem(valuesToSend)
-						: hasJsonDataTypeInSchema(tableSchema)
-							? convertValuesToJsonWithPgp(
-									pgp,
-									tableSchema,
-									(this.getNodeParameter('columns', i) as IDataObject)?.value as IDataObject,
-								)
-							: (this.getNodeParameter('columns.value', i) as IDataObject);
+				item = hasJsonDataTypeInSchema(tableSchema)
+						 ? convertValuesToJsonWithPgp(
+						 	 pgp,
+						 	 tableSchema,
+						 	 (this.getNodeParameter('columns', i) as IDataObject)?.value as IDataObject,
+						 )
+						 : (this.getNodeParameter('columns.value', i) as IDataObject);
 			}
 
 			tableSchema = await updateTableSchema(db, tableSchema, schema, table);
 
-			if (nodeVersion >= 2.4) {
-				item = convertArraysToPostgresFormat(item, tableSchema, this.getNode(), i);
-			}
+			item = convertArraysToPostgresFormat(item, tableSchema, this.getNode(), i);
 
 			values.push(checkItemAgainstSchema(this.getNode(), item, tableSchema, i));
 
 			const outputColumns = this.getNodeParameter('options.outputColumns', i, ['*']) as string[];
 
-			if (nodeVersion >= 2.6 && Object.keys(item).length === 0) {
+			if (Object.keys(item).length === 0) {
 				query = 'INSERT INTO $1:name.$2:name DEFAULT VALUES';
 			}
 
