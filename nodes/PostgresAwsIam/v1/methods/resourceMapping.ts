@@ -35,7 +35,7 @@ const postgresTypeToFieldType = new Map(
 		enum: 'options',
 		ARRAY: 'array',
 
-		// PostgreSQL 扩展类型
+		// PostgreSQL extension types
 		citext: 'string',
 		uuid: 'string',
 		geometry: 'string',

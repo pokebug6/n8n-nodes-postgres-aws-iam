@@ -92,7 +92,7 @@ export function parsePostgresError(
 				error.message = errorMessage;
 			}
 		} catch {
-			// 忽略解析错误
+			// Ignore parse errors
 		}
 	}
 
@@ -109,7 +109,7 @@ export function parsePostgresError(
 		try {
 			description = error.message.split('ECONNREFUSED ')[1].trim();
 		} catch {
-			// 忽略解析错误
+			// Ignore parse errors
 		}
 	}
 
@@ -118,7 +118,7 @@ export function parsePostgresError(
 		try {
 			description = error.message.split('ENOTFOUND ')[1].trim();
 		} catch {
-			// 忽略解析错误
+			// Ignore parse errors
 		}
 	}
 
@@ -127,7 +127,7 @@ export function parsePostgresError(
 		try {
 			description = error.message.split('ETIMEDOUT ')[1].trim();
 		} catch {
-			// 忽略解析错误
+			// Ignore parse errors
 		}
 	}
 
@@ -690,7 +690,7 @@ export const runQueriesAndHandleErrors = async (
 
 
 /**
- * 从节点参数中获取 AWS IAM 连接参数
+ * Get AWS IAM connection parameters from node parameters
  */
 export function getConnectionParams(
 	this: IExecuteFunctions | ILoadOptionsFunctions,

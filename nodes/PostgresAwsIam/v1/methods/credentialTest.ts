@@ -1,2 +1,2 @@
-// AWS IAM 认证模式下不需要凭证测试
-// 连接验证在实际执行时进行
+// Credential testing is not needed for AWS IAM authentication mode
+// Connection validation is performed at actual execution time

@@ -54,7 +54,7 @@ export type PostgresNodeOptions = {
 	treatQueryParametersInSingleQuotesAsText?: boolean;
 };
 
-// AWS IAM 认证连接参数
+// AWS IAM authentication connection parameters
 export type AwsIamConnectionParams = {
 	region: string;
 	host: string;
